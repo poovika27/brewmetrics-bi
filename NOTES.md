@@ -12,6 +12,7 @@ Create a DAX measure called Total Sales that calculates the sum of sales_amount 
 Total Sales = SUM(Fact_Sales[sales_amount]) 
 ```
 
+
 ## Measure 2: MoM Growth
 
 ### Copilot Prompt
@@ -52,3 +53,23 @@ CALCULATE(
         Dim_Date[date] <= MAX(Dim_Date[date])
     )
 )
+```
+
+
+## Measure 4: City Sales Rank
+
+### Copilot Prompt
+
+Create a DAX measure called City Sales Rank that ranks cities by [Total Sales] using RANKX over ALL(Dim_City[city]), with the highest sales ranked 1.
+
+### Copilot Suggestion
+
+```DAX
+City Sales Rank =
+RANKX(
+    ALL(Dim_City[city]),
+    [Total Sales],
+    ,
+    DESC
+)
+```
