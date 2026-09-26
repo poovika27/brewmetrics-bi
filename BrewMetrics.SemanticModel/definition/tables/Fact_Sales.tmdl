@@ -79,6 +79,10 @@ table Fact_Sales
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure Total Sales = SUM(Fact_Sales[sales_amount])
+		formatString: $#,##0.00
+		lineageTag: 9d64fc5f-68ee-4f32-98c9-08389bc9dbd1
+
 	partition Fact_Sales = m
 		mode: import
 		source =
