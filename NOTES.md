@@ -33,3 +33,22 @@ DIVIDE(
     )
 )
 ```
+
+
+## Measure 3: Running Total
+
+### Copilot Prompt
+
+Create a DAX measure called Running Total that calculates cumulative Total Sales over time using Dim_Date[date]. Use FILTER and ALLSELECTED so the running total respects the current report selections.
+
+### Copilot Suggestion
+
+```DAX
+Running Total =
+CALCULATE(
+    [Total Sales],
+    FILTER(
+        ALLSELECTED(Dim_Date[date]),
+        Dim_Date[date] <= MAX(Dim_Date[date])
+    )
+)
