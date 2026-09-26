@@ -73,3 +73,22 @@ RANKX(
     DESC
 )
 ```
+
+
+---
+
+## Measure 5: Avg Transaction Value
+
+### Copilot Prompt
+
+Create a DAX measure called Avg Transaction Value that calculates average transaction value as [Total Sales] divided by the distinct count of Fact_Sales[sale_id]. Use DIVIDE to avoid division-by-zero errors.
+
+### Copilot Suggestion
+
+```DAX
+Avg Transaction Value =
+DIVIDE(
+    [Total Sales],
+    DISTINCTCOUNT(Fact_Sales[sale_id])
+)
+```
