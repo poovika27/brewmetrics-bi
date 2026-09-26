@@ -1,0 +1,43 @@
+table Dim_Product
+	lineageTag: 3e50af46-3b06-4a74-b345-32e4eac51a03
+
+	column item
+		dataType: string
+		lineageTag: 180aeee0-b2b4-4595-80a1-a33efcf3b72d
+		summarizeBy: none
+		sourceColumn: item
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 9af3209e-db91-4523-8cbc-580a34db3ef6
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Product = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct(
+				        Table.SelectColumns(
+				            Staging_Sales,
+				            {"item", "category"}
+				        )
+				    ),
+				    Sorted = Table.Sort(
+				        Source,
+				        {
+				            {"category", Order.Ascending},
+				            {"item", Order.Ascending}
+				        }
+				    )
+				in
+				    Sorted
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

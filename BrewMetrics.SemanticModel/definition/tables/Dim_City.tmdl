@@ -1,0 +1,32 @@
+table Dim_City
+	lineageTag: 8d6d03ad-d8fb-4c4d-a202-21e13eb2d7ec
+
+	column city
+		dataType: string
+		lineageTag: a7ac2584-d190-4962-9e30-97a6f14589ad
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_City = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct(
+				        Table.SelectColumns(
+				            Staging_Sales,
+				            {"city"}
+				        )
+				    ),
+				    Sorted = Table.Sort(
+				        Source,
+				        {{"city", Order.Ascending}}
+				    )
+				in
+				    Sorted
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,26 @@
+expression Staging_Sales =
+		let
+		    Source = Csv.Document(
+		        File.Contents("C:\Users\poovi\brewmetrics-bi\brewmetrics_sales.csv"),
+		        [Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]
+		    ),
+		    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		    Typed = Table.TransformColumnTypes(Headers,{
+		        {"sale_id", Int64.Type},
+		        {"date", type date},
+		        {"city", type text},
+		        {"store_format", type text},
+		        {"category", type text},
+		        {"item", type text},
+		        {"quantity", Int64.Type},
+		        {"unit_price", type number},
+		        {"sales_amount", type number}
+		    })
+		in
+		    Typed
+	lineageTag: 1dcc7bcf-302b-4145-aa3d-ea8eb2fb3aa7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

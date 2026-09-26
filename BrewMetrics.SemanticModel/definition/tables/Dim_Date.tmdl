@@ -1,0 +1,147 @@
+table Dim_Date
+	lineageTag: b43c6255-83ff-4c11-86f5-24c69975ac7b
+
+	column date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: eabd6f92-ff34-4731-a5ca-e0f04c63ea25
+		summarizeBy: none
+		sourceColumn: date
+
+		variation Variation
+			isDefault
+			relationship: 5f1693db-7e90-405d-9144-733964e32fbc
+			defaultHierarchy: LocalDateTable_7e8e4d2c-4c75-4128-8011-39aaef7ddee3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 5915bf00-3d21-452d-b3fa-90a50d0cc3bd
+		summarizeBy: sum
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_num
+		dataType: int64
+		formatString: 0
+		lineageTag: d8c0d541-5211-409f-aac0-083ab5cd30a5
+		summarizeBy: sum
+		sourceColumn: month_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_name
+		dataType: string
+		lineageTag: 658f87f2-43c4-4c82-b111-035d5267462a
+		summarizeBy: none
+		sourceColumn: month_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: string
+		lineageTag: 7095324a-a8da-4bd3-bf8f-f700f331653f
+		summarizeBy: none
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_name
+		dataType: string
+		lineageTag: 1ce1b335-6fff-43ae-b763-99ed4b92d76c
+		summarizeBy: none
+		sourceColumn: day_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_weekend
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: d07e466b-6ae4-46b3-8753-e85be8f412a3
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_year
+		dataType: string
+		lineageTag: c5f0dca3-a43b-4a56-82e4-3fb5be4eca70
+		summarizeBy: none
+		sourceColumn: month_year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Date = m
+		mode: import
+		source =
+				let
+				    MinDate = List.Min(Staging_Sales[date]),
+				    MaxDate = List.Max(Staging_Sales[date]),
+				    DateList = List.Dates(
+				        MinDate,
+				        Duration.Days(MaxDate - MinDate) + 1,
+				        #duration(1,0,0,0)
+				    ),
+				    ToTable = Table.FromList(
+				        DateList,
+				        Splitter.SplitByNothing(),
+				        {"date"}
+				    ),
+				    Typed = Table.TransformColumnTypes(
+				        ToTable,
+				        {{"date", type date}}
+				    ),
+				    AddYear = Table.AddColumn(
+				        Typed,
+				        "year",
+				        each Date.Year([date]),
+				        Int64.Type
+				    ),
+				    AddMonthNum = Table.AddColumn(
+				        AddYear,
+				        "month_num",
+				        each Date.Month([date]),
+				        Int64.Type
+				    ),
+				    AddMonthName = Table.AddColumn(
+				        AddMonthNum,
+				        "month_name",
+				        each Date.MonthName([date]),
+				        type text
+				    ),
+				    AddQuarter = Table.AddColumn(
+				        AddMonthName,
+				        "quarter",
+				        each "Q" & Text.From(Date.QuarterOfYear([date])),
+				        type text
+				    ),
+				    AddDayName = Table.AddColumn(
+				        AddQuarter,
+				        "day_name",
+				        each Date.DayOfWeekName([date]),
+				        type text
+				    ),
+				    AddWeekend = Table.AddColumn(
+				        AddDayName,
+				        "is_weekend",
+				        each Date.DayOfWeek([date], Day.Monday) >= 5,
+				        type logical
+				    ),
+				    AddMonthYear = Table.AddColumn(
+				        AddWeekend,
+				        "month_year",
+				        each Date.ToText([date], "MMM yyyy"),
+				        type text
+				    )
+				in
+				    AddMonthYear
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

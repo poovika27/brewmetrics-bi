@@ -1,0 +1,94 @@
+table Fact_Sales
+	lineageTag: a5aeaa69-0f1c-4887-93dd-666a6ae3d425
+
+	column sale_id
+		dataType: int64
+		formatString: 0
+		lineageTag: d076f39e-249d-43fa-8d4d-99b00eeee40e
+		summarizeBy: sum
+		sourceColumn: sale_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f7f1dbe1-326b-4cb8-9a9c-08282ef8fd84
+		summarizeBy: none
+		sourceColumn: date
+
+		variation Variation
+			isDefault
+			relationship: f0fbee93-5dea-4aaa-bbf2-864b1757301b
+			defaultHierarchy: LocalDateTable_2883fce0-386a-40a1-92b3-770cf8096c72.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column city
+		dataType: string
+		lineageTag: d6aecaa3-95a6-4d41-a6d1-912530495a11
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column store_format
+		dataType: string
+		lineageTag: 7e256827-382e-4a70-b69a-548ca7d52a32
+		summarizeBy: none
+		sourceColumn: store_format
+
+		annotation SummarizationSetBy = Automatic
+
+	column item
+		dataType: string
+		lineageTag: 01a26f2b-89e7-4044-8e78-8d1ffef414e5
+		summarizeBy: none
+		sourceColumn: item
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 57d0be1c-ad8b-4340-99fe-782ce29b9030
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_price
+		dataType: double
+		lineageTag: 9e48de18-54f3-4133-83ee-d50f98312314
+		summarizeBy: sum
+		sourceColumn: unit_price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column sales_amount
+		dataType: double
+		lineageTag: 5286ce68-6900-4712-87c5-c2df941b1556
+		summarizeBy: sum
+		sourceColumn: sales_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Fact_Sales = m
+		mode: import
+		source =
+				let
+				    Source = Staging_Sales,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"sale_id", "date", "city", "store_format", "item", "quantity", "unit_price", "sales_amount"})
+				in
+				    #"Removed Other Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
